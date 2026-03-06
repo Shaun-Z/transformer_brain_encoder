@@ -1,0 +1,11 @@
+dataset_root: /data/algonauts_2023_challenge_data
+output_root: ./results
+subject: 1
+run_name: subj01_dinov2_q_rois_all
+distributed: false
+batch_size: 16
+num_workers: 4
+val_ratio: 0.1
+seed: 0
+backbone_name: dinov2_q
+readout_name: tben
