@@ -245,7 +245,7 @@ class brain_encoder(nn.Module):
             lh_f_pred = self.lh_embed(output_tokens)
             rh_f_pred = self.rh_embed(output_tokens)
 
-            l2_reg = torch.tensor(0.).cuda()
+            l2_reg = torch.tensor(0., device=output_tokens.device)
             for param in self.lh_embed.parameters():
                 l2_reg += torch.norm(param)
 

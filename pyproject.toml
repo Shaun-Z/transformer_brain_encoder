@@ -1,0 +1,18 @@
+[project]
+name = "transformer-brain-encoder"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "argparse>=1.4.0",
+    "matplotlib>=3.10.8",
+    "nilearn>=0.13.1",
+    "numpy>=2.4.2",
+    "open-clip-torch>=3.3.0",
+    "scipy>=1.17.1",
+    "torch>=2.10.0",
+    "torchvision>=0.25.0",
+    "tqdm>=4.67.3",
+    "wandb>=0.25.0",
+]

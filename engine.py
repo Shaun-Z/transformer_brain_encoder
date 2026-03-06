@@ -12,6 +12,7 @@ import numpy as np
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
                     device: torch.device, epoch: int, max_norm: float = 0):
+    device = torch.device(device)
     model.train()
     criterion.train()
     print_freq = 100
@@ -24,13 +25,13 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     for imgs, targets in metric_logger.log_every(data_loader, print_freq, header):
         
         if isinstance(imgs, (list, torch.Tensor)):
-            imgs = tuple(imgs.cuda())
+            imgs = tuple(img.to(device, non_blocking=True) for img in imgs)
             imgs = nested_tensor_from_tensor_list(imgs)
     
         # TODO there may be a better way to do this 
         if type(targets) is dict:
             targets = [dict(zip(targets,t)) for t in zip(*targets.values())]
-            targets = [{k: v.cuda() for k, v in t.items()} for t in targets]
+            targets = [{k: v.to(device, non_blocking=True) for k, v in t.items()} for t in targets]
 
         outputs = model(imgs)
         loss_dict = criterion(outputs, targets)
@@ -68,6 +69,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
 @torch.no_grad()
 def evaluate(model, criterion, data_loader, args,  lh_challenge_rois=None, rh_challenge_rois=None):
+    device = torch.device(args.device)
     model.eval()
     criterion.eval()
 
@@ -83,12 +85,12 @@ def evaluate(model, criterion, data_loader, args,  lh_challenge_rois=None, rh_ch
 
     for samples, targets in metric_logger.log_every(data_loader, 100, header):
         
-        samples = tuple(samples.cuda())
+        samples = tuple(sample.to(device, non_blocking=True) for sample in samples)
         samples = nested_tensor_from_tensor_list(samples)
 
         if type(targets) is dict:
             targets = [dict(zip(targets,t)) for t in zip(*targets.values())]
-            targets = [{k: v.cuda() for k, v in t.items()} for t in targets]
+            targets = [{k: v.to(device, non_blocking=True) for k, v in t.items()} for t in targets]
 
         outputs = model(samples)
     
@@ -179,6 +181,7 @@ def test_batch(model, samples, readout_res, lh_challenge_rois, rh_challenge_rois
 
 @torch.no_grad()
 def test(model, criterion, data_loader, args, lh_challenge_rois, rh_challenge_rois):
+    device = torch.device(args.device)
     model.eval()
     criterion.eval()
 
@@ -190,7 +193,7 @@ def test(model, criterion, data_loader, args, lh_challenge_rois, rh_challenge_ro
     
     for i,samples in tqdm(enumerate(data_loader), total=len(data_loader)):
 
-        samples = tuple(samples.cuda())
+        samples = tuple(sample.to(device, non_blocking=True) for sample in samples)
         samples = nested_tensor_from_tensor_list(samples)
 
         outputs = model(samples)

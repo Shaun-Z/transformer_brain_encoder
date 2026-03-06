@@ -1,4 +1,12 @@
-import os, argparse, time, glob, pickle, subprocess, shlex, io, pprint
+import glob
+import os
+import argparse
+import time
+import pickle
+import subprocess
+import shlex
+import io
+import pprint
 
 import numpy as np
 from tqdm import tqdm
@@ -22,7 +30,6 @@ from engine import train_one_epoch, evaluate, test
 
 import utils.utils as utils 
 from pathlib import Path
-import os
 
 from PIL import Image
 Image.warnings.simplefilter('ignore')
@@ -49,7 +56,7 @@ def get_args_parser():
     ## NSD params
     parser.add_argument('--subj', default=1, type=int) 
     parser.add_argument('--run', default=1, type=int)  
-    parser.add_argument('--data_dir', default='../../../algonauts/algonauts_2023_challenge_data/', type=str)
+    parser.add_argument('--data_dir', default='/data/algonauts_2023_challenge_data/train_data/', type=str)
     parser.add_argument('--parent_submission_dir', default='./algonauts_2023_challenge_submission/', type=str)
     
     parser.add_argument('--saved_feats', default=None, type=str) #'dinov2q'
@@ -222,7 +229,7 @@ def main(rank, world_size, args):
     else:
         args.gpu = 0
 
-    args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    args.device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     print(args.device)
     device = torch.device(args.device)
 
@@ -289,7 +296,7 @@ def main(rank, world_size, args):
         args.rh_vs = betas['rh'].shape[1]
 
     model = brain_encoder(args) #get_model(args)
-    model = model.cuda() 
+    model = model.to(args.device)
     num_parameters =  sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Number of model parameters: {num_parameters}")
     print(model)
