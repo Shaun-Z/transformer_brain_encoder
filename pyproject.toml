@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "argparse>=1.4.0",
+    "cortex>=0.42.1",
     "matplotlib>=3.10.8",
     "nilearn>=0.13.1",
     "numpy>=2.4.2",

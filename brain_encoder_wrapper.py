@@ -20,11 +20,11 @@ class brain_encoder_wrapper():
         self.subj = format(subj, '02')
 
         if results_dir is None:
-            self.results_dir = '/engram/nklab/hossein/recurrent_models/transformer_brain_encoder/results/'
+            self.results_dir = './results'
         
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-        data_dir = '/engram/nklab/algonauts/algonauts_2023_challenge_data/'
+        data_dir = '/data/algonauts_2023_challenge_data/train_data/'
         self.data_dir = os.path.join(data_dir, 'subj'+self.subj)
         # /engram/nklab/hossein/recurrent_models/transformer_brain_encoder/results/
 
@@ -123,12 +123,14 @@ class brain_encoder_wrapper():
 
     def load_model_path(self, model_path, device='cpu'):
 
-        checkpoint = torch.load(model_path + 'checkpoint.pth', map_location='cpu')
+        # PyTorch >=2.6 defaults to weights_only=True, which blocks loading argparse.Namespace in checkpoints.
+        checkpoint = torch.load(model_path + 'checkpoint.pth', map_location='cpu', weights_only=False)
 
         pretrained_dict = checkpoint['model']
         args = checkpoint['args']
         model = brain_encoder(args)
-        model.load_state_dict(pretrained_dict)
+        # Checkpoints are saved without backbone_model weights; load head weights only.
+        model.load_state_dict(pretrained_dict, strict=False)
         model.to(device)
         
 

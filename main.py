@@ -310,7 +310,7 @@ def main(rank, world_size, args):
     
     
     if args.resume:
-        checkpoint = torch.load(args.resume, map_location='cpu')
+        checkpoint = torch.load(args.resume, map_location='cpu', weights_only=False)
         pretrained_dict = checkpoint['model']
         model.load_state_dict(pretrained_dict)
         
