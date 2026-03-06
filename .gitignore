@@ -2,6 +2,7 @@ wandb/
 results/
 archive/
 saved_image_features/
+.worktrees/
 __pycache__
 extract_features.ipynb
 images/
