@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 
 from src.config import ExperimentConfig
 from src.data.dataset import AlgonautsDataset, collate_samples
@@ -38,18 +39,20 @@ def build_train_val_indices(total_items: int, val_ratio: float, seed: int) -> tu
     return train_indices, val_indices
 
 
-def build_dataloaders(config: ExperimentConfig) -> DataLoaders:
+def build_dataloaders(config: ExperimentConfig, distributed: bool = False, rank: int = 0, world_size: int = 1) -> DataLoaders:
     manifest = build_subject_manifest(config.dataset_root, subject=config.subject)
     total_items = len(list(manifest.training_images_dir.glob("*.png")))
     train_indices, val_indices = build_train_val_indices(total_items, config.val_ratio, config.seed)
 
     train_dataset = AlgonautsDataset(manifest, train_indices)
     val_dataset = AlgonautsDataset(manifest, val_indices)
+    train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank, shuffle=True) if distributed else None
 
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.batch_size,
-        shuffle=True,
+        shuffle=train_sampler is None,
+        sampler=train_sampler,
         num_workers=config.num_workers,
         collate_fn=collate_samples,
     )

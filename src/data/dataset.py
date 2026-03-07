@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
+from torchvision.transforms import functional as TF
 from torchvision import transforms
 
 from src.data.manifest import SubjectManifest
@@ -56,6 +57,7 @@ class AlgonautsDataset(Dataset[Sample]):
         dataset_index = int(self.indices[item])
         image = Image.open(self.image_paths[dataset_index]).convert("RGB")
         image_tensor = self.transform(image)
+        image_tensor = pad_to_patch_multiple(image_tensor, patch_size=14)
 
         return Sample(
             image=image_tensor,
@@ -70,3 +72,14 @@ def collate_samples(batch: list[Sample]) -> dict[str, torch.Tensor]:
         "lh_fmri": torch.stack([sample.lh_fmri for sample in batch], dim=0),
         "rh_fmri": torch.stack([sample.rh_fmri for sample in batch], dim=0),
     }
+
+
+def pad_to_patch_multiple(image_tensor: torch.Tensor, patch_size: int) -> torch.Tensor:
+    _, height, width = image_tensor.shape
+    padded_height = ((height + patch_size - 1) // patch_size) * patch_size
+    padded_width = ((width + patch_size - 1) // patch_size) * patch_size
+    pad_bottom = padded_height - height
+    pad_right = padded_width - width
+    if pad_bottom == 0 and pad_right == 0:
+        return image_tensor
+    return TF.pad(image_tensor, [0, 0, pad_right, pad_bottom])

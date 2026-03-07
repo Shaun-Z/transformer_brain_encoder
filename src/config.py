@@ -20,6 +20,14 @@ class ExperimentConfig:
     num_workers: int
     val_ratio: float
     seed: int
+    pretrained_backbone: bool
+    hidden_dim: int
+    decoder_layers: int
+    encoder_layers: int
+    enc_output_layer: int
+    nheads: int
+    dim_feedforward: int
+    dropout: float
     backbone_name: str
     readout_name: str
 
@@ -76,6 +84,14 @@ def load_config(config_path: str | Path, overrides: dict[str, Any] | None = None
         num_workers=int(config_data.get("num_workers", 4)),
         val_ratio=float(config_data.get("val_ratio", 0.1)),
         seed=int(config_data.get("seed", 0)),
+        pretrained_backbone=bool(config_data.get("pretrained_backbone", False)),
+        hidden_dim=int(config_data.get("hidden_dim", 256)),
+        decoder_layers=int(config_data.get("decoder_layers", 1)),
+        encoder_layers=int(config_data.get("encoder_layers", 0)),
+        enc_output_layer=int(config_data.get("enc_output_layer", -1)),
+        nheads=int(config_data.get("nheads", 8)),
+        dim_feedforward=int(config_data.get("dim_feedforward", 1024)),
+        dropout=float(config_data.get("dropout", 0.1)),
         backbone_name=config_data["backbone_name"],
         readout_name=config_data["readout_name"],
     )

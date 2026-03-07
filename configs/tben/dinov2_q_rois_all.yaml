@@ -7,5 +7,13 @@ batch_size: 16
 num_workers: 4
 val_ratio: 0.1
 seed: 0
+pretrained_backbone: true
+hidden_dim: 256
+decoder_layers: 1
+encoder_layers: 0
+enc_output_layer: -1
+nheads: 8
+dim_feedforward: 1024
+dropout: 0.1
 backbone_name: dinov2_q
 readout_name: tben
