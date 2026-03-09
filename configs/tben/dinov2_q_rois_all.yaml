@@ -1,7 +1,7 @@
 dataset_root: /data/algonauts_2023_challenge_data
 output_root: ./results
 subject: 1
-run_name: subj01_dinov2_q_rois_all
+run_name: subj{subject:02d}_dinov2_q_rois_all
 distributed: false
 batch_size: 16
 num_workers: 4

@@ -1,7 +1,7 @@
 dataset_root: /data/algonauts_2023_challenge_data
 output_root: ./results
 subject: 1
-run_name: subj01_tben
+run_name: subj{subject:02d}_tben
 distributed: false
 batch_size: 16
 num_workers: 4

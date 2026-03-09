@@ -22,7 +22,7 @@ def main() -> int:
     dataloaders, roi_bundle, model = build_training_components(config)
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
-    model.load_state_dict(checkpoint["model"])
+    model.load_state_dict(checkpoint["model"], strict=False)
     metrics = evaluate_model(model, dataloaders.val, roi_bundle, torch.device("cpu"))
     print(metrics)
     return 0

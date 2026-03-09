@@ -11,7 +11,7 @@ from src.config import ExperimentConfig
 from src.data.datamodule import build_dataloaders
 from src.data.rois import RoiBundle, load_roi_bundle
 from src.models.model import build_model
-from src.train.checkpoints import CheckpointManager
+from src.train.checkpoints import CheckpointManager, checkpoint_model_state
 from src.train.distributed import cleanup_distributed, is_main_process, setup_distributed
 from src.train.losses import BrainEncodingLoss, aggregate_predictions
 from src.train.metrics import mean_vertex_correlation
@@ -135,7 +135,7 @@ def train(
                 metrics.update(val_metrics)
                 state = {
                     "epoch": epoch,
-                    "model": unwrapped_model.state_dict(),
+                    "model": checkpoint_model_state(unwrapped_model.state_dict()),
                     "optimizer": optimizer.state_dict(),
                     "config": {key: str(value) if isinstance(value, Path) else value for key, value in asdict(config).items()},
                     "metrics": metrics,

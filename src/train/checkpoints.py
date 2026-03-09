@@ -7,6 +7,14 @@ from typing import Any
 import torch
 
 
+def checkpoint_model_state(model_state: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in model_state.items() if not key.startswith("backbone.")}
+
+
+def checkpoint_best_state(state: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in state.items() if key != "optimizer"}
+
+
 class CheckpointManager:
     def __init__(self, run_dir: str | Path) -> None:
         self.run_dir = Path(run_dir)
@@ -27,7 +35,7 @@ class CheckpointManager:
     def save_best(self, state: dict[str, Any], score: float) -> None:
         if score >= self.best_score:
             self.best_score = score
-            torch.save(state, self.best_path)
+            torch.save(checkpoint_best_state(state), self.best_path)
 
     def save_metrics(self, metrics: dict[str, Any]) -> None:
         (self.run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2, sort_keys=True))

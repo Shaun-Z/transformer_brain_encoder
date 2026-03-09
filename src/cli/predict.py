@@ -24,7 +24,7 @@ def main() -> int:
     config = load_config(args.config, overrides=overrides)
     dataloaders, roi_bundle, model = build_training_components(config)
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
-    model.load_state_dict(checkpoint["model"])
+    model.load_state_dict(checkpoint["model"], strict=False)
     model.eval()
 
     batch = next(iter(dataloaders.val))

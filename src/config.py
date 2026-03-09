@@ -69,7 +69,16 @@ def load_config(config_path: str | Path, overrides: dict[str, Any] | None = None
 
     output_root = Path(config_data["output_root"]).expanduser().resolve()
     subject = int(config_data["subject"])
-    run_name = config_data.get("run_name", f"subj{subject:02d}_{config_data['backbone_name']}_{config_data['readout_name']}")
+    run_name_template = config_data.get("run_name")
+    if run_name_template is None:
+        run_name = f"subj{subject:02d}_{config_data['backbone_name']}_{config_data['readout_name']}"
+    else:
+        run_name = str(run_name_template).format(
+            subject=subject,
+            config_name=path.stem,
+            backbone_name=config_data["backbone_name"],
+            readout_name=config_data["readout_name"],
+        )
     run_dir = output_root / run_name
 
     return ExperimentConfig(

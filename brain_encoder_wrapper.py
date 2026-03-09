@@ -55,8 +55,10 @@ class brain_encoder_wrapper:
             rh_output_dim=self.roi_bundle.rh_challenge_rois.shape[1],
             lh_query_count=self.roi_bundle.lh_challenge_rois.shape[0],
             rh_query_count=self.roi_bundle.rh_challenge_rois.shape[0],
+            pretrained_backbone=self.config.pretrained_backbone,
+            enc_output_layer=self.config.enc_output_layer,
         )
-        self.model.load_state_dict(checkpoint["model"])
+        self.model.load_state_dict(checkpoint["model"], strict=False)
         self.model.to(self.device)
         self.model.eval()
 
